@@ -1,9 +1,11 @@
 package com.example.airportapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,24 +18,22 @@ public class City {
     @NotBlank(message = "City name is required")
     private String name;
 
-    private String state;
+    @NotBlank(message = "Province is required")
+    private String province;
 
-    @Min(value = 0, message = "Population cannot be negative")
+    @Positive(message = "Population must be positive")
     private int population;
 
     @OneToMany(mappedBy = "city", cascade = CascadeType.ALL)
-    private List<Airport> airports;
-
-    @OneToMany(mappedBy = "city", cascade = CascadeType.ALL)
-    private List<Passenger> passengers;
+    @JsonIgnore
+    private List<Airport> airports = new ArrayList<>();
 
     // Constructors
-    public City() {
-    }
+    public City() {}
 
-    public City(String name, String state, int population) {
+    public City(String name, String province, int population) {
         this.name = name;
-        this.state = state;
+        this.province = province;
         this.population = population;
     }
 
@@ -51,12 +51,12 @@ public class City {
         this.name = name;
     }
 
-    public String getState() {
-        return state;
+    public String getProvince() {
+        return province;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setProvince(String province) {
+        this.province = province;
     }
 
     public int getPopulation() {
@@ -73,13 +73,5 @@ public class City {
 
     public void setAirports(List<Airport> airports) {
         this.airports = airports;
-    }
-
-    public List<Passenger> getPassengers() {
-        return passengers;
-    }
-
-    public void setPassengers(List<Passenger> passengers) {
-        this.passengers = passengers;
     }
 }
