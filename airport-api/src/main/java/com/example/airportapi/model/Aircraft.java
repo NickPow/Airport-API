@@ -1,8 +1,11 @@
 package com.example.airportapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,25 +15,26 @@ public class Aircraft {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Aircraft type is required")
+    @NotBlank(message = "Type is required")
     private String type;
 
     @NotBlank(message = "Airline name is required")
     private String airlineName;
 
-    @Min(value = 0, message = "Number of passengers cannot be negative")
+    @Positive(message = "Number of passengers must be positive")
     private int numberOfPassengers;
+
+    @ManyToMany(mappedBy = "aircraftFlown")
+    @JsonIgnore
+    private List<Passenger> passengers = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
-        name = "aircraft_airports",
-        joinColumns = @JoinColumn(name = "aircraft_id"),
-        inverseJoinColumns = @JoinColumn(name = "airport_id")
+            name = "aircraft_airports",
+            joinColumns = @JoinColumn(name = "aircraft_id"),
+            inverseJoinColumns = @JoinColumn(name = "airport_id")
     )
-    private List<Airport> airports;
-
-    @ManyToMany(mappedBy = "aircraftFlown")
-    private List<Passenger> passengers;
+    private List<Airport> airports = new ArrayList<>();
 
     // Constructors
     public Aircraft() {}
@@ -71,19 +75,19 @@ public class Aircraft {
         this.numberOfPassengers = numberOfPassengers;
     }
 
-    public List<Airport> getAirports() {
-        return airports;
-    }
-
-    public void setAirports(List<Airport> airports) {
-        this.airports = airports;
-    }
-
     public List<Passenger> getPassengers() {
         return passengers;
     }
 
     public void setPassengers(List<Passenger> passengers) {
         this.passengers = passengers;
+    }
+
+    public List<Airport> getAirports() {
+        return airports;
+    }
+
+    public void setAirports(List<Airport> airports) {
+        this.airports = airports;
     }
 }

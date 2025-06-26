@@ -1,7 +1,10 @@
 package com.example.airportapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,7 +25,8 @@ public class Airport {
     private City city;
 
     @ManyToMany(mappedBy = "airports")
-    private List<Aircraft> aircraftUsed;
+    @JsonIgnore
+    private List<Aircraft> aircraft = new ArrayList<>();
 
     // Constructors
     public Airport() {}
@@ -63,11 +67,11 @@ public class Airport {
         this.city = city;
     }
 
-    public List<Aircraft> getAircraftUsed() {
-        return aircraftUsed;
+    public List<Aircraft> getAircraft() {
+        return aircraft;
     }
 
-    public void setAircraftUsed(List<Aircraft> aircraftUsed) {
-        this.aircraftUsed = aircraftUsed;
+    public void setAircraft(List<Aircraft> aircraft) {
+        this.aircraft = aircraft;
     }
 }

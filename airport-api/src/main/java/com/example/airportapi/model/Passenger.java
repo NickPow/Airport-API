@@ -3,6 +3,7 @@ package com.example.airportapi.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,11 +28,11 @@ public class Passenger {
 
     @ManyToMany
     @JoinTable(
-        name = "passenger_aircraft",
-        joinColumns = @JoinColumn(name = "passenger_id"),
-        inverseJoinColumns = @JoinColumn(name = "aircraft_id")
+            name = "passenger_aircraft",
+            joinColumns = @JoinColumn(name = "passenger_id"),
+            inverseJoinColumns = @JoinColumn(name = "aircraft_id")
     )
-    private List<Aircraft> aircraftFlown;
+    private List<Aircraft> aircraftFlown = new ArrayList<>();  // Mutable list to prevent Hibernate errors
 
     // Constructors
     public Passenger() {}
