@@ -28,6 +28,9 @@ public class Airport {
     @JsonIgnore
     private List<Aircraft> aircraft = new ArrayList<>();
 
+    @OneToMany(mappedBy = "airport", cascade = CascadeType.ALL)
+    private List<Gate> gates = new ArrayList<>();
+
     // Constructors
     public Airport() {}
 
@@ -73,5 +76,13 @@ public class Airport {
 
     public void setAircraft(List<Aircraft> aircraft) {
         this.aircraft = aircraft;
+    }
+
+    public List<Gate> getGates() {
+        return gates;
+    }
+
+    public void setGates(List<Gate> gates) {
+        this.gates = gates;
     }
 }
