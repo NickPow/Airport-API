@@ -1,5 +1,6 @@
 package com.example.airportapi.controller;
 
+import com.example.airportapi.dto.FlightScheduleCreateDTO;
 import com.example.airportapi.dto.FlightScheduleDTO;
 import com.example.airportapi.dto.FlightScheduleResponseDTO;
 import com.example.airportapi.mapper.FlightScheduleMapper;
@@ -44,6 +45,12 @@ public class FlightScheduleController {
     @PostMapping("/admin/flights")
     public ResponseEntity<FlightScheduleResponseDTO> createFlight(@RequestBody @Valid FlightScheduleDTO dto) {
         FlightSchedule created = flightService.createFlight(dto);
+        return ResponseEntity.ok(FlightScheduleMapper.toDto(created));
+    }
+
+    @PostMapping("/admin/flights/simple")
+    public ResponseEntity<FlightScheduleResponseDTO> createFlightSimple(@RequestBody @Valid FlightScheduleCreateDTO dto) {
+        FlightSchedule created = flightService.createFlightSimple(dto);
         return ResponseEntity.ok(FlightScheduleMapper.toDto(created));
     }
 

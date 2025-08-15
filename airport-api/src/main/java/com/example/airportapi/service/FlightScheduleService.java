@@ -1,5 +1,6 @@
 package com.example.airportapi.service;
 
+import com.example.airportapi.dto.FlightScheduleCreateDTO;
 import com.example.airportapi.dto.FlightScheduleDTO;
 import com.example.airportapi.model.*;
 import com.example.airportapi.model.enums.FlightType;
@@ -49,6 +50,45 @@ public class FlightScheduleService {
 
         Airport destination = airportRepo.findById(dto.getDestinationAirportId())
                 .orElseThrow(() -> new EntityNotFoundException("Destination airport not found"));
+
+        FlightSchedule flight = new FlightSchedule(
+                dto.getFlightNumber(),
+                dto.getFlightType(),
+                dto.getStatus(),
+                dto.getScheduledTime(),
+                airline,
+                aircraft,
+                gate,
+                origin,
+                destination
+        );
+
+        return flightRepo.save(flight);
+    }
+
+    public FlightSchedule createFlightSimple(FlightScheduleCreateDTO dto) {
+        // Find airline by name
+        Airline airline = airlineRepo.findByName(dto.getAirlineName())
+                .orElseThrow(() -> new EntityNotFoundException("Airline not found with name: " + dto.getAirlineName()));
+
+        // Find airports by code
+        Airport origin = airportRepo.findByCode(dto.getOriginCode())
+                .orElseThrow(() -> new EntityNotFoundException("Origin airport not found with code: " + dto.getOriginCode()));
+
+        Airport destination = airportRepo.findByCode(dto.getDestinationCode())
+                .orElseThrow(() -> new EntityNotFoundException("Destination airport not found with code: " + dto.getDestinationCode()));
+
+        // Find or create a default aircraft for this airline
+        Aircraft aircraft = aircraftRepo.findAll().stream()
+                .filter(a -> a.getAirlineName().equals(dto.getAirlineName()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("No aircraft found for airline: " + dto.getAirlineName()));
+
+        // Find or assign a default gate at the origin airport
+        Gate gate = gateRepo.findAll().stream()
+                .filter(g -> g.getAirport().getId().equals(origin.getId()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("No gates available at origin airport: " + dto.getOriginCode()));
 
         FlightSchedule flight = new FlightSchedule(
                 dto.getFlightNumber(),
