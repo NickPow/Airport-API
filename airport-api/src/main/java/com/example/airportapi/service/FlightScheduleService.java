@@ -65,10 +65,11 @@ public class FlightScheduleService {
         );
         
         // Set the new direct flight information fields
-        flight.setAircraftType(dto.getAircraftType());
-        flight.setGateNumber(dto.getGateNumber());
-        flight.setTerminalNumber(dto.getTerminalNumber());
-        flight.setPassengerCapacity(dto.getPassengerCapacity());
+        // Use DTO values if provided, otherwise populate from entities
+        flight.setAircraftType(dto.getAircraftType() != null ? dto.getAircraftType() : aircraft.getType());
+        flight.setGateNumber(dto.getGateNumber() != null ? dto.getGateNumber() : gate.getGateNumber());
+        flight.setTerminalNumber(dto.getTerminalNumber() != null ? dto.getTerminalNumber() : "1"); // Default terminal
+        flight.setPassengerCapacity(dto.getPassengerCapacity() != null ? dto.getPassengerCapacity() : aircraft.getNumberOfPassengers());
 
         return flightRepo.save(flight);
     }
@@ -110,10 +111,14 @@ public class FlightScheduleService {
         );
         
         // Set the new direct flight information fields
-        flight.setAircraftType(dto.getAircraftType());
-        flight.setGateNumber(dto.getGateNumber());
-        flight.setTerminalNumber(dto.getTerminalNumber());
-        flight.setPassengerCapacity(dto.getPassengerCapacity());
+        // Use DTO values if provided, otherwise populate from entities
+        System.out.println("DEBUG: Aircraft found: " + aircraft.getType() + " for airline: " + aircraft.getAirlineName());
+        System.out.println("DEBUG: Gate found: " + gate.getGateNumber() + " at airport: " + gate.getAirport().getCode());
+        
+        flight.setAircraftType(dto.getAircraftType() != null ? dto.getAircraftType() : aircraft.getType());
+        flight.setGateNumber(dto.getGateNumber() != null ? dto.getGateNumber() : gate.getGateNumber());
+        flight.setTerminalNumber(dto.getTerminalNumber() != null ? dto.getTerminalNumber() : "1"); // Default terminal
+        flight.setPassengerCapacity(dto.getPassengerCapacity() != null ? dto.getPassengerCapacity() : aircraft.getNumberOfPassengers());
 
         return flightRepo.save(flight);
     }
@@ -138,10 +143,11 @@ public class FlightScheduleService {
                 .orElseThrow(() -> new EntityNotFoundException("Destination airport not found")));
                 
         // Update the new direct flight information fields
-        existing.setAircraftType(dto.getAircraftType());
-        existing.setGateNumber(dto.getGateNumber());
-        existing.setTerminalNumber(dto.getTerminalNumber());
-        existing.setPassengerCapacity(dto.getPassengerCapacity());
+        // Use DTO values if provided, otherwise populate from entities
+        existing.setAircraftType(dto.getAircraftType() != null ? dto.getAircraftType() : existing.getAircraft().getType());
+        existing.setGateNumber(dto.getGateNumber() != null ? dto.getGateNumber() : existing.getGate().getGateNumber());
+        existing.setTerminalNumber(dto.getTerminalNumber() != null ? dto.getTerminalNumber() : "1"); // Default terminal
+        existing.setPassengerCapacity(dto.getPassengerCapacity() != null ? dto.getPassengerCapacity() : existing.getAircraft().getNumberOfPassengers());
 
         return flightRepo.save(existing);
     }
