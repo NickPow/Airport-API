@@ -30,6 +30,10 @@ public class FlightScheduleService {
         this.airportRepo = airportRepo;
     }
 
+    public List<FlightSchedule> getAllFlights() {
+        return flightRepo.findAll();
+    }
+
     public FlightSchedule createFlight(FlightScheduleDTO dto) {
         Airline airline = airlineRepo.findById(dto.getAirlineId())
                 .orElseThrow(() -> new EntityNotFoundException("Airline not found"));
