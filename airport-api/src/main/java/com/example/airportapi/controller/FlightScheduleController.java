@@ -3,6 +3,7 @@ package com.example.airportapi.controller;
 import com.example.airportapi.dto.FlightScheduleCreateDTO;
 import com.example.airportapi.dto.FlightScheduleDTO;
 import com.example.airportapi.dto.FlightScheduleResponseDTO;
+import com.example.airportapi.dto.PassengerInfoDTO;
 import com.example.airportapi.mapper.FlightScheduleMapper;
 import com.example.airportapi.model.FlightSchedule;
 import com.example.airportapi.service.FlightScheduleService;
@@ -72,5 +73,41 @@ public class FlightScheduleController {
     public ResponseEntity<Void> deleteFlight(@PathVariable Long id) {
         flightService.deleteFlight(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/admin/flights/{id}/book-passengers")
+    public ResponseEntity<FlightScheduleResponseDTO> bookPassengers(@PathVariable Long id, @RequestParam int passengerCount) {
+        try {
+            FlightSchedule updated = flightService.bookPassengers(id, passengerCount);
+            return ResponseEntity.ok(FlightScheduleMapper.toDto(updated));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/admin/flights/{id}/cancel-passengers")
+    public ResponseEntity<FlightScheduleResponseDTO> cancelPassengers(@PathVariable Long id, @RequestParam int passengerCount) {
+        try {
+            FlightSchedule updated = flightService.cancelPassengers(id, passengerCount);
+            return ResponseEntity.ok(FlightScheduleMapper.toDto(updated));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/admin/flights/{id}/passenger-info")
+    public ResponseEntity<PassengerInfoDTO> getPassengerInfo(@PathVariable Long id) {
+        return flightService.getFlightById(id)
+                .map(flight -> {
+                    int aircraftCapacity = flight.getAircraft() != null ? flight.getAircraft().getNumberOfPassengers() : 0;
+                    PassengerInfoDTO info = new PassengerInfoDTO(
+                        flight.getCurrentPassengerCount(),
+                        aircraftCapacity,
+                        flight.getAvailableSeats(),
+                        flight.hasAvailableSeats()
+                    );
+                    return ResponseEntity.ok(info);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }

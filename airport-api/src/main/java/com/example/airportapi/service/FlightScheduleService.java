@@ -9,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FlightScheduleService {
@@ -62,6 +63,12 @@ public class FlightScheduleService {
                 origin,
                 destination
         );
+        
+        // Set the new direct flight information fields
+        flight.setAircraftType(dto.getAircraftType());
+        flight.setGateNumber(dto.getGateNumber());
+        flight.setTerminalNumber(dto.getTerminalNumber());
+        flight.setPassengerCapacity(dto.getPassengerCapacity());
 
         return flightRepo.save(flight);
     }
@@ -101,6 +108,12 @@ public class FlightScheduleService {
                 origin,
                 destination
         );
+        
+        // Set the new direct flight information fields
+        flight.setAircraftType(dto.getAircraftType());
+        flight.setGateNumber(dto.getGateNumber());
+        flight.setTerminalNumber(dto.getTerminalNumber());
+        flight.setPassengerCapacity(dto.getPassengerCapacity());
 
         return flightRepo.save(flight);
     }
@@ -123,6 +136,12 @@ public class FlightScheduleService {
                 .orElseThrow(() -> new EntityNotFoundException("Origin airport not found")));
         existing.setDestination(airportRepo.findById(dto.getDestinationAirportId())
                 .orElseThrow(() -> new EntityNotFoundException("Destination airport not found")));
+                
+        // Update the new direct flight information fields
+        existing.setAircraftType(dto.getAircraftType());
+        existing.setGateNumber(dto.getGateNumber());
+        existing.setTerminalNumber(dto.getTerminalNumber());
+        existing.setPassengerCapacity(dto.getPassengerCapacity());
 
         return flightRepo.save(existing);
     }
@@ -140,5 +159,48 @@ public class FlightScheduleService {
 
     public List<FlightSchedule> getDeparturesByAirport(Long airportId) {
         return flightRepo.findByOriginIdAndFlightType(airportId, FlightType.DEPARTURE);
+    }
+
+    public Optional<FlightSchedule> getFlightById(Long id) {
+        return flightRepo.findById(id);
+    }
+
+    public FlightSchedule bookPassengers(Long flightId, int passengerCount) {
+        FlightSchedule flight = flightRepo.findById(flightId)
+                .orElseThrow(() -> new EntityNotFoundException("Flight not found"));
+
+        if (passengerCount <= 0) {
+            throw new IllegalArgumentException("Passenger count must be positive");
+        }
+
+        int newTotal = flight.getCurrentPassengerCount() + passengerCount;
+        int aircraftCapacity = flight.getAircraft() != null ? flight.getAircraft().getNumberOfPassengers() : 0;
+
+        if (newTotal > aircraftCapacity) {
+            throw new IllegalArgumentException("Not enough available seats. Available: " + 
+                (aircraftCapacity - flight.getCurrentPassengerCount()) + ", Requested: " + passengerCount);
+        }
+
+        flight.setCurrentPassengerCount(newTotal);
+        return flightRepo.save(flight);
+    }
+
+    public FlightSchedule cancelPassengers(Long flightId, int passengerCount) {
+        FlightSchedule flight = flightRepo.findById(flightId)
+                .orElseThrow(() -> new EntityNotFoundException("Flight not found"));
+
+        if (passengerCount <= 0) {
+            throw new IllegalArgumentException("Passenger count must be positive");
+        }
+
+        int newTotal = flight.getCurrentPassengerCount() - passengerCount;
+
+        if (newTotal < 0) {
+            throw new IllegalArgumentException("Cannot cancel more passengers than currently booked. Current: " + 
+                flight.getCurrentPassengerCount() + ", Requested to cancel: " + passengerCount);
+        }
+
+        flight.setCurrentPassengerCount(newTotal);
+        return flightRepo.save(flight);
     }
 }

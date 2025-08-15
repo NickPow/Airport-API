@@ -1,9 +1,13 @@
 package com.example.airportapi.controller;
 
+import com.example.airportapi.dto.AirportCreateDTO;
 import com.example.airportapi.dto.AirportResponseDTO;
 import com.example.airportapi.mapper.AirportMapper;
 import com.example.airportapi.model.Airport;
+import com.example.airportapi.model.City;
 import com.example.airportapi.repository.AirportRepository;
+import com.example.airportapi.repository.CityRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +21,9 @@ public class AirportController {
 
     @Autowired
     private AirportRepository airportRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
 
     // GET all airports using DTO
     @GetMapping
@@ -46,10 +53,20 @@ public class AirportController {
         return ResponseEntity.ok(airportDTOs);
     }
 
-    // CREATE airport (raw entity)
+    // CREATE airport using DTO
     @PostMapping
-    public Airport createAirport(@RequestBody Airport airport) {
-        return airportRepository.save(airport);
+    public ResponseEntity<Airport> createAirport(@Valid @RequestBody AirportCreateDTO dto) {
+        Airport airport = new Airport();
+        airport.setCode(dto.getCode());
+        airport.setName(dto.getName());
+        
+        // If cityId is provided, set the city
+        if (dto.getCityId() != null) {
+            cityRepository.findById(dto.getCityId()).ifPresent(airport::setCity);
+        }
+        
+        Airport savedAirport = airportRepository.save(airport);
+        return ResponseEntity.ok(savedAirport);
     }
 
     // UPDATE airport (raw entity)

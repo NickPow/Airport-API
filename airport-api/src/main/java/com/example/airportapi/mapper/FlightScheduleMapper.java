@@ -7,6 +7,7 @@ import com.example.airportapi.model.*;
 public class FlightScheduleMapper {
 
     public static FlightScheduleResponseDTO toDto(FlightSchedule flight) {
+        int aircraftCapacity = flight.getAircraft() != null ? flight.getAircraft().getNumberOfPassengers() : 0;
         return new FlightScheduleResponseDTO(
             flight.getId(),
             flight.getFlightNumber(),
@@ -15,7 +16,14 @@ public class FlightScheduleMapper {
             flight.getScheduledTime(),
             flight.getAirline().getName(),
             flight.getOrigin().getCode(),
-            flight.getDestination().getCode()
+            flight.getDestination().getCode(),
+            flight.getCurrentPassengerCount(),
+            aircraftCapacity,
+            flight.getAvailableSeats(),
+            flight.getAircraftType(),
+            flight.getGateNumber(),
+            flight.getTerminalNumber(),
+            flight.getPassengerCapacity()
         );
     }
 

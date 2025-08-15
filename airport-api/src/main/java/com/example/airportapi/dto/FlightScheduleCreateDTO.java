@@ -29,6 +29,12 @@ public class FlightScheduleCreateDTO {
 
     @NotNull(message = "Flight status is required")
     private FlightStatus status = FlightStatus.ON_TIME;
+    
+    // New fields for direct flight information
+    private String aircraftType;           // e.g. "Boeing 737-800", "Airbus A320"
+    private String gateNumber;             // e.g. "A12", "B7", "C3"
+    private String terminalNumber;         // e.g. "1", "2", "International"
+    private Integer passengerCapacity;     // e.g. 180, 250, 350
 
     public FlightScheduleCreateDTO() {
     }
@@ -101,5 +107,38 @@ public class FlightScheduleCreateDTO {
 
     public void setStatus(FlightStatus status) {
         this.status = status != null ? status : FlightStatus.ON_TIME;
+    }
+
+    // New getters and setters for direct flight information
+    public String getAircraftType() {
+        return aircraftType;
+    }
+
+    public void setAircraftType(String aircraftType) {
+        this.aircraftType = aircraftType;
+    }
+
+    public String getGateNumber() {
+        return gateNumber;
+    }
+
+    public void setGateNumber(String gateNumber) {
+        this.gateNumber = gateNumber;
+    }
+
+    public String getTerminalNumber() {
+        return terminalNumber;
+    }
+
+    public void setTerminalNumber(String terminalNumber) {
+        this.terminalNumber = terminalNumber;
+    }
+
+    public Integer getPassengerCapacity() {
+        return passengerCapacity;
+    }
+
+    public void setPassengerCapacity(Integer passengerCapacity) {
+        this.passengerCapacity = passengerCapacity;
     }
 }

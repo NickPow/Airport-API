@@ -47,6 +47,15 @@ public class FlightSchedule {
     @JoinColumn(name = "destination_airport_id")
     private Airport destination;
 
+    @Column(nullable = false)
+    private int currentPassengerCount = 0;
+
+    // New fields for direct flight information
+    private String aircraftType;           // e.g. "Boeing 737-800", "Airbus A320"
+    private String gateNumber;             // e.g. "A12", "B7", "C3"
+    private String terminalNumber;         // e.g. "1", "2", "International"
+    private Integer passengerCapacity;     // e.g. 180, 250, 350
+
     public FlightSchedule() {
     }
 
@@ -62,6 +71,7 @@ public class FlightSchedule {
         this.gate = gate;
         this.origin = origin;
         this.destination = destination;
+        this.currentPassengerCount = 0;
     }
 
     public Long getId() {
@@ -138,5 +148,57 @@ public class FlightSchedule {
 
     public void setDestination(Airport destination) {
         this.destination = destination;
+    }
+
+    public int getCurrentPassengerCount() {
+        return currentPassengerCount;
+    }
+
+    public void setCurrentPassengerCount(int currentPassengerCount) {
+        this.currentPassengerCount = currentPassengerCount;
+    }
+
+    public int getAvailableSeats() {
+        if (aircraft != null) {
+            return aircraft.getNumberOfPassengers() - currentPassengerCount;
+        }
+        return 0;
+    }
+
+    public boolean hasAvailableSeats() {
+        return getAvailableSeats() > 0;
+    }
+
+    // New getters and setters for direct flight information
+    public String getAircraftType() {
+        return aircraftType;
+    }
+
+    public void setAircraftType(String aircraftType) {
+        this.aircraftType = aircraftType;
+    }
+
+    public String getGateNumber() {
+        return gateNumber;
+    }
+
+    public void setGateNumber(String gateNumber) {
+        this.gateNumber = gateNumber;
+    }
+
+    public String getTerminalNumber() {
+        return terminalNumber;
+    }
+
+    public void setTerminalNumber(String terminalNumber) {
+        this.terminalNumber = terminalNumber;
+    }
+
+    public Integer getPassengerCapacity() {
+        return passengerCapacity;
+    }
+
+    public void setPassengerCapacity(Integer passengerCapacity) {
+        this.passengerCapacity = passengerCapacity;
     }
 }
