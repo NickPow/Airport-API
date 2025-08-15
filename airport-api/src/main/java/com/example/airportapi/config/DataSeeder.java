@@ -31,7 +31,70 @@ public class DataSeeder {
         return args -> {
 
             if (airportRepo.count() > 0) {
-                System.out.println("Database already seeded. Skipping.");
+                System.out.println("Database already seeded. Adding missing airlines and airports...");
+                
+                // Add missing airlines
+                if (airlineRepo.findByName("American Airlines").isEmpty()) {
+                    List<Airline> newAirlines = Arrays.asList(
+                        new Airline("American Airlines", "AA"),
+                        new Airline("Delta Air Lines", "DL"),
+                        new Airline("United Airlines", "UA"),
+                        new Airline("Southwest Airlines", "WN"),
+                        new Airline("JetBlue Airways", "B6"),
+                        new Airline("British Airways", "BA"),
+                        new Airline("Lufthansa", "LH"),
+                        new Airline("Air France", "AF"),
+                        new Airline("Singapore Airlines", "SQ"),
+                        new Airline("Cathay Pacific", "CX")
+                    );
+                    airlineRepo.saveAll(newAirlines);
+                    System.out.println("Added " + newAirlines.size() + " new airlines");
+                }
+                
+                // Add missing airports and cities  
+                if (airportRepo.findByCode("LAX").isEmpty()) {
+                    // Cities
+                    City losAngeles = new City("Los Angeles", "California", 4000000);
+                    City newYork = new City("New York", "New York", 8400000);
+                    City london = new City("London", "England", 9000000);
+                    City singapore = new City("Singapore", "Singapore", 5900000);
+                    cityRepo.saveAll(Arrays.asList(losAngeles, newYork, london, singapore));
+                    
+                    // Airports
+                    List<Airport> newAirports = Arrays.asList(
+                        new Airport("Los Angeles International", "LAX", losAngeles),
+                        new Airport("John F. Kennedy International", "JFK", newYork),
+                        new Airport("London Heathrow", "LHR", london),
+                        new Airport("Singapore Changi", "SIN", singapore)
+                    );
+                    airportRepo.saveAll(newAirports);
+                    System.out.println("Added " + newAirports.size() + " new airports");
+                    
+                    // Add gates for new airports
+                    List<Gate> newGates = Arrays.asList(
+                        new Gate("1", newAirports.get(0)), new Gate("2", newAirports.get(0)),
+                        new Gate("1A", newAirports.get(1)), new Gate("1B", newAirports.get(1)),
+                        new Gate("A1", newAirports.get(2)), new Gate("A2", newAirports.get(2)),
+                        new Gate("A1", newAirports.get(3)), new Gate("A2", newAirports.get(3))
+                    );
+                    gateRepo.saveAll(newGates);
+                    
+                    // Add aircraft for new airlines
+                    List<Aircraft> newAircraft = Arrays.asList(
+                        new Aircraft("Boeing 737-800", "American Airlines", 172),
+                        new Aircraft("Boeing 777-300ER", "American Airlines", 310),
+                        new Aircraft("Boeing 737-900ER", "Delta Air Lines", 180),
+                        new Aircraft("Airbus A350-900", "Delta Air Lines", 306),
+                        new Aircraft("Boeing 737-800", "United Airlines", 166),
+                        new Aircraft("Boeing 777-300ER", "British Airways", 297),
+                        new Aircraft("Airbus A350-900", "Lufthansa", 293),
+                        new Aircraft("Airbus A380-800", "Singapore Airlines", 471)
+                    );
+                    aircraftRepo.saveAll(newAircraft);
+                    System.out.println("Added " + newAircraft.size() + " new aircraft");
+                }
+                
+                System.out.println("Comprehensive data update completed!");
                 return;
             }
 

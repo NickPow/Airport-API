@@ -24,13 +24,21 @@ public class FlightScheduleController {
     }
 
     @GetMapping("/airports/{id}/flights/arrivals")
-    public ResponseEntity<List<FlightSchedule>> getArrivals(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(flightService.getArrivalsByAirport(id));
+    public ResponseEntity<List<FlightScheduleResponseDTO>> getArrivals(@PathVariable("id") Long id) {
+        List<FlightScheduleResponseDTO> arrivals = flightService.getArrivalsByAirport(id)
+                .stream()
+                .map(FlightScheduleMapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(arrivals);
     }
 
     @GetMapping("/airports/{id}/flights/departures")
-    public ResponseEntity<List<FlightSchedule>> getDepartures(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(flightService.getDeparturesByAirport(id));
+    public ResponseEntity<List<FlightScheduleResponseDTO>> getDepartures(@PathVariable("id") Long id) {
+        List<FlightScheduleResponseDTO> departures = flightService.getDeparturesByAirport(id)
+                .stream()
+                .map(FlightScheduleMapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(departures);
     }
 
     @GetMapping("/admin/flights")

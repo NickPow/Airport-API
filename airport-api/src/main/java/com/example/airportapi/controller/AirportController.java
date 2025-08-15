@@ -28,6 +28,14 @@ public class AirportController {
         return ResponseEntity.ok(airportDTOs);
     }
 
+    // GET single airport by ID using DTO
+    @GetMapping("/{id}")
+    public ResponseEntity<AirportResponseDTO> getAirportById(@PathVariable Long id) {
+        return airportRepository.findById(id)
+                .map(airport -> ResponseEntity.ok(AirportMapper.toDto(airport)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     // GET airports by city using DTO
     @GetMapping("/byCity/{cityId}")
     public ResponseEntity<List<AirportResponseDTO>> getAirportsByCity(@PathVariable Long cityId) {
