@@ -2,6 +2,7 @@ package com.example.airportapi.controller;
 
 import com.example.airportapi.model.Airport;
 import com.example.airportapi.model.City;
+import com.example.airportapi.repository.AirportRepository;
 import com.example.airportapi.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class CityController {
     @Autowired
     private CityRepository cityRepository;
 
+    @Autowired
+    private AirportRepository airportRepository;
+
     @GetMapping
     public List<City> getAllCities() {
         return cityRepository.findAll();
@@ -27,8 +31,8 @@ public class CityController {
         Optional<City> optionalCity = cityRepository.findById(id);
 
         if (optionalCity.isPresent()) {
-            City city = optionalCity.get();
-            return ResponseEntity.ok(city.getAirports());
+            List<Airport> airports = airportRepository.findByCityId(id);
+            return ResponseEntity.ok(airports);
         } else {
             return ResponseEntity.notFound().build();
         }

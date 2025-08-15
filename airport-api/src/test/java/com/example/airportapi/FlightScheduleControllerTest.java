@@ -1,8 +1,10 @@
 package com.example.airportapi;
 
 import com.example.airportapi.dto.FlightScheduleCreateDTO;
+import com.example.airportapi.model.*;
 import com.example.airportapi.model.enums.FlightStatus;
 import com.example.airportapi.model.enums.FlightType;
+import com.example.airportapi.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +26,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@TestPropertySource(locations = "classpath:application-test.properties")
+@ActiveProfiles("test")
 public class FlightScheduleControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private AirlineRepository airlineRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
+
+    @Autowired
+    private AirportRepository airportRepository;
+
+    @Autowired
+    private AircraftRepository aircraftRepository;
+
+    @Autowired
+    private GateRepository gateRepository;
 
     private ObjectMapper objectMapper;
 
@@ -33,6 +54,37 @@ public class FlightScheduleControllerTest {
     public void setup() {
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        
+        // Create test data
+        createTestData();
+    }
+
+    private void createTestData() {
+        // Create cities
+        City toronto = new City("Toronto", "Ontario", 2930000);
+        City vancouver = new City("Vancouver", "British Columbia", 631486);
+        cityRepository.save(toronto);
+        cityRepository.save(vancouver);
+
+        // Create airports
+        Airport yyz = new Airport("Toronto Pearson International Airport", "YYZ", toronto);
+        Airport yvr = new Airport("Vancouver International Airport", "YVR", vancouver);
+        airportRepository.save(yyz);
+        airportRepository.save(yvr);
+
+        // Create airline
+        Airline airCanada = new Airline("Air Canada", "AC");
+        airlineRepository.save(airCanada);
+
+        // Create aircraft
+        Aircraft aircraft = new Aircraft("Boeing 737", "Air Canada", 189);
+        aircraftRepository.save(aircraft);
+
+        // Create gates
+        Gate gateA1 = new Gate("A1", yyz);
+        Gate gateB2 = new Gate("B2", yvr);
+        gateRepository.save(gateA1);
+        gateRepository.save(gateB2);
     }
 
     @Test

@@ -7,6 +7,7 @@ import com.example.airportapi.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -19,8 +20,10 @@ public class DataSeeder {
      * This seeder populates the database with comprehensive sample data for development and demo
      * purposes including major airlines, airports worldwide, and various aircraft types.
      * It only runs if no airports exist to avoid duplication.
+     * Excluded from test profile to prevent conflicts with test data.
      */
     @Bean
+    @Profile("!test")
     public CommandLineRunner seedData(
             CityRepository cityRepo,
             AirportRepository airportRepo,
