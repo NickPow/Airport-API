@@ -3,7 +3,6 @@ package com.example.airportapi.service;
 import com.example.airportapi.dto.FlightScheduleCreateDTO;
 import com.example.airportapi.dto.FlightScheduleDTO;
 import com.example.airportapi.model.*;
-import com.example.airportapi.model.enums.FlightType;
 import com.example.airportapi.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -112,9 +111,6 @@ public class FlightScheduleService {
         
         // Set the new direct flight information fields
         // Use DTO values if provided, otherwise populate from entities
-        System.out.println("DEBUG: Aircraft found: " + aircraft.getType() + " for airline: " + aircraft.getAirlineName());
-        System.out.println("DEBUG: Gate found: " + gate.getGateNumber() + " at airport: " + gate.getAirport().getCode());
-        
         flight.setAircraftType(dto.getAircraftType() != null ? dto.getAircraftType() : aircraft.getType());
         flight.setGateNumber(dto.getGateNumber() != null ? dto.getGateNumber() : gate.getGateNumber());
         flight.setTerminalNumber(dto.getTerminalNumber() != null ? dto.getTerminalNumber() : "1"); // Default terminal
@@ -160,11 +156,13 @@ public class FlightScheduleService {
     }
 
     public List<FlightSchedule> getArrivalsByAirport(Long airportId) {
-        return flightRepo.findByDestinationIdAndFlightType(airportId, FlightType.ARRIVAL);
+        // Arrivals are flights where the destination is this airport
+        return flightRepo.findByDestination_Id(airportId);
     }
 
     public List<FlightSchedule> getDeparturesByAirport(Long airportId) {
-        return flightRepo.findByOriginIdAndFlightType(airportId, FlightType.DEPARTURE);
+        // Departures are flights where the origin is this airport
+        return flightRepo.findByOrigin_Id(airportId);
     }
 
     public Optional<FlightSchedule> getFlightById(Long id) {
